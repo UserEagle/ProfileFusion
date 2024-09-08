@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2 class="text-center text-warning display-6">U&I Wishes</h2>
+
+    <div class="row">
+        <!-- Form for user input -->
+        <div class="col-md-4">
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="baseImageSelector">Theme:</label>
+                    <select id="baseImageSelector" class="form-control">
+                        <option value="birthday.jpeg">Birthday</option>
+                        <option value="anniversary.jpeg">Anniversary</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" value="Rishabh Shah" class="form-control" id="name" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                    <label for="team">Team</label>
+                    <input type="text" value="Team Bangalore" class="form-control" id="team"
+                           placeholder="Enter team name" required>
+                </div>
+                <div class="form-group">
+                    <label for="imageUpload"></label>
+                    <input type="file" class="form-control" id="imageUpload" accept="image/*">
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary">Update Image</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Canvas for image manipulation -->
+        <div id="canvasParent" class="col-md-4">
+            <div id="canvasContainer" style="position: relative;">
+                <div id="canvasWrapper">
+                    <div id="canvas"></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button id="downloadButton" class="btn btn-primary mt-3">Download Image</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/vendor/bootstrap.bundle.js"></script>
+<!-- Konva JS -->
+<script src="js/vendor/konva.js"></script>
+<!-- Custom JS -->
+<script src="js/script.js"></script>
+</body>
+</html>
