@@ -3,7 +3,6 @@ let stage, layer, imageObj, baseImageKonva, transformer,
     reader, subImage, group, subGroupImage,
     textName, textTeam, $name, $team;
 
-// Function to load and change the base image
 function loadBaseImage(selectedImage, clearInputs) {
     imageObj.src = baseImageBasePath + selectedImage;
     if (clearInputs) {
@@ -12,7 +11,6 @@ function loadBaseImage(selectedImage, clearInputs) {
     }
 }
 
-// Initialize Konva stage and layer
 function initializeCanvas() {
     let $canvas = $('#canvas');
     stage = new Konva.Stage({
@@ -26,7 +24,6 @@ function initializeCanvas() {
 
     imageObj = new Image();
     imageObj.onload = function() {
-        // Clear previous base image
         if (baseImageKonva) {
             baseImageKonva.destroy();
         }
@@ -35,8 +32,8 @@ function initializeCanvas() {
             x: 0,
             y: 0,
             image: imageObj,
-            width: stage.width(), // Adjust as needed
-            height: stage.height() // Adjust as needed
+            width: stage.width(),
+            height: stage.height()
         });
 
         layer.add(baseImageKonva);
@@ -47,7 +44,6 @@ function initializeCanvas() {
     let $baseImageSelector = $('#baseImageSelector');
     loadBaseImage($baseImageSelector.val());
 
-    // Event listener for changing the base image
     $baseImageSelector.on('change', function () {
         loadBaseImage($(this).val(), true);
     });
@@ -55,25 +51,18 @@ function initializeCanvas() {
     textName = new Konva.Text({
         y: 355,
         fontSize: 14,
-        fill: 'black',
+        fontStyle: 'bold',
+        fill: '#c57327',
     });
     textName.setAttr("x", (stage.width() - textName.width()) / 2);
 
     textTeam = new Konva.Text({
-        y: 368,
+        y: 370,
         fontSize: 10,
-        fill: 'black'
+        fontStyle: 'bold',
+        fill: '#414833'
     });
     textTeam.setAttr("x", (stage.width() - textTeam.width()) / 2);
-
-    /*
-        // For Testing
-        setTimeout(function () {
-            layer.add(textName);
-            layer.add(textTeam);
-            layer.draw();
-        }, 1000);
-    */
 }
 
 $(document).ready(function () {
@@ -95,48 +84,51 @@ $(document).ready(function () {
             reader = new FileReader();
             reader.onload = function (e) {
                 subImage = new Image();
+                subImage.src = e.target.result;
                 subImage.onload = function () {
-                    // Clear previous uploaded images
                     layer.find('Image').forEach(function (image) {
                         if (image !== baseImageKonva) {
                             image.destroy();
                         }
                     });
                     if (transformer) {
-                        transformer.destroy(); // Remove the previous transformer
+                        transformer.destroy();
                     }
 
                     // Create a group with a circular clip
                     group = new Konva.Group({
-                        x: 70, // Center the group
-                        y: 150, // Center the group
+                        x: 70,
+                        y: 150,
                         clipFunc: function (ctx) {
-                            ctx.arc(100, 100, 100, 0, Math.PI * 2, false); // x, y, radius
+                            ctx.arc(100, 100, 100, 0, Math.PI * 2, false);
                         }
                     });
 
-                    // Add the group to the layer
                     layer.add(group);
 
-                    // Create the uploaded image
+                    const baseImageRect = baseImageKonva.getClientRect();
+
+                    const aspectRatio = subImage.width / subImage.height;
+                    const desiredWidth = 250;
+                    const desiredHeight = desiredWidth / aspectRatio;
+                    const sgiX = (baseImageRect.x + baseImageRect.width / 2 - desiredWidth / 2) - group.attrs.x;
+                    const sgiY = (baseImageRect.y + baseImageRect.height / 2 - desiredHeight / 2) - group.attrs.y;
+
                     subGroupImage = new Konva.Image({
-                        x: 0, // Position inside the group
-                        y: 0, // Position inside the group
+                        x: sgiX,
+                        y: sgiY,
                         image: subImage,
-                        width: 200, // Make the width match the diameter of the clip
-                        height: 200, // Make the height match the diameter of the clip
-                        draggable: true, // Allow image dragging
+                        width: desiredWidth,
+                        height: desiredHeight,
+                        draggable: true,
                     });
 
-                    // Add the image to the group
                     group.add(subGroupImage);
 
-                    // Enable resizing/scaling of the image
                     transformer = new Konva.Transformer({
                         node: subGroupImage,
                         enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
                         boundBoxFunc: function (oldBox, newBox) {
-                            // limit resize to not go below a minimum size
                             if (newBox.width < 50 || newBox.height < 50) {
                                 return oldBox;
                             }
@@ -145,21 +137,18 @@ $(document).ready(function () {
                     });
                     layer.add(transformer);
 
-                    // Ensure the group and image are drawn
                     layer.draw();
                 };
-                subImage.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Clear previous text elements
         layer.find('Text').forEach(function (text) {
             text.destroy();
         });
 
-        textName.setText(`${name}`);
-        textTeam.setText(`${team}`);
+        textName.setText(`${name?.toUpperCase()}`);
+        textTeam.setText(`( ${team?.toUpperCase()} )`);
 
         textName.setAttr("x", (stage.width() - textName.width()) / 2);
         textTeam.setAttr("x", (stage.width() - textTeam.width()) / 2);
@@ -171,7 +160,6 @@ $(document).ready(function () {
 
     $('#downloadButton').on('click', function () {
 
-        // Hide the transformer before exporting
         transformer.hide();
         layer.draw(); // Re-draw layer without the transformer
 
@@ -181,13 +169,12 @@ $(document).ready(function () {
         // Create a temporary link element to trigger download
         const link = document.createElement('a');
         link.href = dataURL;
-        link.download = 'final_image.png';
+        link.download = 'U&I - Born To Win.png';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
-        // Show the transformer again after exporting
         transformer.show();
-        layer.draw(); // Re-draw layer with the transformer
+        layer.draw();
     });
 });
